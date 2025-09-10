@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scientific Calculator</title>
+    <link rel="stylesheet" href="/static/calculator/style.css">
+</head>
+<body>
+    <div class="calculator">
+        <div class="display">
+            <input type="text" id="expression" readonly>
+            <div id="result"></div>
+        </div>
+        <div class="buttons">
+            <button onclick="append('7')">7</button>
+            <button onclick="append('8')">8</button>
+            <button onclick="append('9')">9</button>
+            <button onclick="append('/')">÷</button>
+            <button onclick="append('sin(')">sin</button>
+            <button onclick="append('cos(')">cos</button>
+            <button onclick="append('tan(')">tan</button>
+            <button onclick="append('log(')">log</button>
+            <button onclick="append('4')">4</button>
+            <button onclick="append('5')">5</button>
+            <button onclick="append('6')">6</button>
+            <button onclick="append('*')">×</button>
+            <button onclick="append('sqrt(')">√</button>
+            <button onclick="append('^')">^</button>
+            <button onclick="append('(')">(</button>
+            <button onclick="append(')')">)</button>
+            <button onclick="append('1')">1</button>
+            <button onclick="append('2')">2</button>
+            <button onclick="append('3')">3</button>
+            <button onclick="append('-')">−</button>
+            <button onclick="append('abs(')">abs</button>
+            <button onclick="append('pow(')">pow</button>
+            <button onclick="clearDisplay()">C</button>
+            <button onclick="backspace()">⌫</button>
+            <button onclick="append('0')">0</button>
+            <button onclick="append('.')">.</button>
+            <button onclick="append('+')">+</button>
+            <button onclick="calculate()" class="equals">=</button>
+        </div>
+    </div>
+    <script>
+        function append(val) {
+            document.getElementById('expression').value += val;
+        }
+        function clearDisplay() {
+            document.getElementById('expression').value = '';
+            document.getElementById('result').innerText = '';
+        }
+        function backspace() {
+            let exp = document.getElementById('expression').value;
+            document.getElementById('expression').value = exp.slice(0, -1);
+        }
+        function calculate() {
+            const expr = document.getElementById('expression').value;
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/calculate/', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const data = JSON.parse(xhr.responseText);
+                    document.getElementById('result').innerText = data.result;
+                } else {
+                    document.getElementById('result').innerText = 'Error';
+                }
+            };
+            xhr.send('expression=' + encodeURIComponent(expr));
+        }
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>
