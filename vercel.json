@@ -4,6 +4,7 @@
     { "src": "static/calculator/style.css", "use": "@vercel/static" }
   ],
   "routes": [
+    { "src": "/static/(.*)", "dest": "/static/$1" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
